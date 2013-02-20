@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Glimpse Knockout plugin</title>
+</head>
+<body>
+    <form>
+        <div>
+            <label>First name: </label>
+            <input type="text" data-bind="value: firstName" />
+        </div>
+        <div>
+            <label>Last name: </label>
+            <input type="text" data-bind="value: lastName" />
+        </div>
+    </form>
+    <h1>Hi <span data-bind="text: fullName"></span></h1>
+    <script src="glimpse.js"></script>
+    <script src="knockout-2.2.1.js"></script>
+
+    <script>
+        //Knockout setup
+        (function (ko) {
+            'use strict';
+
+            var vm = {
+                firstName: ko.observable(),
+                lastName: ko.observable()
+            };
+            vm.fullName = ko.computed(function () {
+                if (!this.firstName()) {
+                    return '';
+                }
+
+                return this.firstName() + ' ' + (this.lastName() || '');
+            }, vm);
+
+            ko.applyBindings(vm, document.getElementsByTagName('form')[0]);
+            ko.applyBindings(vm, document.getElementsByTagName('h1')[0]);
+        })(window.ko);
+    </script>
+
+    <script>
+        (function($, pubsub, tab, render) {
+            pubsub.subscribe('action.panel.rendering.ko', function (args) {
+                var models = [];
+                var excludeTags = ['script', 'link'];
+                var body = document.body;
+                var child, model;
+
+                for(var i = 0, il = body.children.length; i < il; i++) {
+                    child = body.children[i];
+                    if (~excludeTags.indexOf(child.tagName)) {
+                        continue;
+                    }
+
+                    model = ko.contextFor(child);
+                    if (model) {
+                        model = model.$root;
+                        var item = models.filter(function (m) {
+                            return m.ko === model;
+                        })[0];
+
+                        if (!item) {
+                            item = { ko: model, elements: [] };
+                            models.push(item);
+                        }
+
+                        item.elements.push(child);
+
+                        /*if (!model.__ko__glimpse) {
+                            model.__ko__glimpse = ko.computed(function () {
+                                return JSON.stringify(ko.toJS(this));
+                            }, model);
+                        }*/
+                    }
+                }
+                args.pluginData.models = models;
+            });
+
+            pubsub.subscribe('action.panel.showed.ko', function (args) {
+                var models = args.pluginData.models;
+
+                if (!models.length) {
+                    render.engine.insert(args.panel, 'No ko ViewModel\'s were found');
+                } else {
+                    var rowData = models.map(function (record) {
+                        var model = record.ko;
+                        var props = Object.getOwnPropertyNames(model);
+                        var data = props.map(function (prop) {
+                            var res = {
+                                name: prop,
+                                data: undefined
+                            };
+                            
+                            if (ko.isObservable(model[prop])) {
+                                res.data = ko.utils.unwrapObservable(model[prop]);
+                            } else {
+                                res.data = model[prop];
+                            }
+
+                            return res;
+                        });
+
+                        var elementNames = record.elements.map(function (element) {
+                            return {
+                                tag: element.tagName,
+                                classNames: element.className || 'N/A',
+                                id: element.id || 'N/A'
+                            };
+                        });
+
+                        return {
+                            elementNames: elementNames,
+                            data: data
+                        };
+                    });
+console.log(rowData);
+                }
+            });
+
+            var config = {
+                key: 'ko',
+                payload: {
+                    name: 'KnockoutJS',
+                    isPermanent: true,
+                    data: 'Loading...',
+                    models: []
+                }
+            };
+
+            tab.register(config);
+        })(jQueryGlimpse, glimpse.pubsub, glimpse.tab, glimpse.render);
+    </script>
+</body>
+</html>
