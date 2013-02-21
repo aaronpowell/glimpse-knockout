@@ -54,7 +54,7 @@
 
             var viewData = [ ['Elements', 'ViewModel'] ];
             for (var i = 0; i < rowData.length; i++) {
-                var rowDataItem = rowData[i];
+                var rowDataItem = rowData[i],
                     elementsData = [ [ 'Tag Name', 'Class', 'Id' ] ];
 
                 for (var x = 0; x < rowDataItem.elementNames.length; x++) {
