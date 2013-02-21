@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>glimpse-knockout</id>
+        <version>0.1.0</version>
+        <title>KnockoutJS inspector for Glimpse</title>
+        <authors>Aaron Powell</authors>
+        <owners>Aaron Powell</owners>
+        <licenseUrl>https://github.com/aaronpowell/glimpse-knockout/blob/master/LICENSE.md</licenseUrl>
+        <projectUrl>https://github.com/aaronpowell/glimpse-knockout</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>This is a simple plugin that allows you to inspect your KnockoutJS ViewModels using the Glimpse tool</description>
+        <summary>A KnockoutJS inspector for Glimpse</summary>
+        <releaseNotes>Initial release</releaseNotes>
+        <copyright>Aaron Powell</copyright>
+        <tags>knockoutjs glimpse web</tags>
+        <dependencies>
+            <dependency id="Glimpse" version="1.0.0" />
+            <dependency id="KnockoutJS" version="2.2.1" />
+        </dependencies>
+    </metadata>
+</package>
