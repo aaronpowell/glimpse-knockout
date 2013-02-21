@@ -102,6 +102,7 @@
         key: 'ko',
         payload: {
             name: 'KnockoutJS',
+            version: '0.1.0',
             isPermanent: true,
             data: 'Loading...',
             models: []
