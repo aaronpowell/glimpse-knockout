@@ -4,12 +4,11 @@
         var models = [];
         var excludeTags = ['script', 'link'];
         var body = document.body;
-        var child, model;
 
-        for(var i = 0, il = body.children.length; i < il; i++) {
-            child = body.children[i];
+        var elementWalker = function (child) {
+            var model;
             if (~excludeTags.indexOf(child.tagName)) {
-                continue;
+                return;
             }
 
             model = ko.contextFor(child);
@@ -25,7 +24,15 @@
                 }
 
                 item.elements.push(child);
+            } else {
+                for (var i = 0, il = child.children.length; i < il; i++) {
+                    elementWalker(child.children[i]);
+                }
             }
+        };
+
+        for(var i = 0, il = body.children.length; i < il; i++) {
+            elementWalker(body.children[i]);
         }
         args.pluginData.models = models;
     });

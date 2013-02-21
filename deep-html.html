@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Glimpse Knockout plugin</title>
+</head>
+<body>
+    <form>
+        <div>
+            <label>First name: </label>
+            <input type="text" data-bind="value: firstName" />
+        </div>
+        <div>
+            <label>Last name: </label>
+            <input type="text" data-bind="value: lastName" />
+        </div>
+    </form>
+    <div>
+        <div>
+            <h1>Hi <span data-bind="text: fullName"></span></h1>
+        </div>
+    </div>
+    <script src="glimpse.js"></script>
+    <script src="knockout-2.2.1.js"></script>
+
+    <script>
+        //Knockout setup
+        (function (ko) {
+            'use strict';
+
+            var vm = {
+                firstName: ko.observable('Aaron'),
+                lastName: ko.observable('Powell')
+            };
+            vm.fullName = ko.computed(function () {
+                if (!this.firstName()) {
+                    return '';
+                }
+
+                return this.firstName() + ' ' + (this.lastName() || '');
+            }, vm);
+
+            ko.applyBindings(vm, document.getElementsByTagName('form')[0]);
+            ko.applyBindings(vm, document.getElementsByTagName('h1')[0]);
+        })(window.ko);
+    </script>
+
+    <script src="glimpse-knockout.js"></script>
+</body>
+</html>
