@@ -80,16 +80,6 @@
                 } else {
                     var rowData = models.map(function (record) {
                         var model = record.ko;
-                        var props = Object.getOwnPropertyNames(model);
-                        var data = {};
-                        props.forEach(function (prop) {
-                            if (ko.isObservable(model[prop])) {
-                                data[prop] = ko.utils.unwrapObservable(model[prop]);
-                            } else {
-                                data[prop] = model[prop];
-                            }
-                        });
-
                         var elementNames = record.elements.map(function (element) {
                             return [
                                 element.tagName.toLowerCase(),
@@ -100,7 +90,7 @@
 
                         return {
                             elementNames: elementNames,
-                            data: data
+                            data: model
                         };
                     });
 
@@ -113,10 +103,37 @@
                             elementsData.push(rowDataItem.elementNames[x]);
                         }
 
-                        viewData.push([ elementsData, rowDataItem.data ])
+                        var keys = Object.getOwnPropertyNames(rowDataItem.data);
+                        var data = {};
+                        keys.forEach(function (key) {
+                            var item = rowDataItem.data[key];
+                            data[key] = ko.isObservable(item) ? ko.utils.unwrapObservable(item) : item;
+                        });
+
+                        viewData.push([ elementsData, data ])
                     }
 
                     render.engine.insert(args.panel, viewData);
+
+                    //temp work arounds until there is a better way to interact with generated HTML
+                    var viewModelTables = args.panel.children('table');
+
+                    viewModelTables.each(function () {
+                        var table = $(this);
+                        var vmCell = table.children('.glimpse-row-holder').find('> tr > td:last-child');
+
+                        var rows = vmCell.find('tbody tr');
+
+                        rows.each(function (i) {
+                            var that = $(this).find('td');
+                            var item = rowData[0].data[Object.getOwnPropertyNames(rowData[0].data)[i]];
+                            if (ko.isObservable(item)) {
+                                item.subscribe(function (val) {
+                                    that.html(val);
+                                });
+                            }
+                        });
+                    });
                 }
             });
 
