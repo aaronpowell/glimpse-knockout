@@ -110,19 +110,19 @@
                         };
                     });
 
-                    var viewData = rowData.map(function (data) {
-                        return [
-                            ['Elements', 'ViewModel'],
-                            [
-                                [
-                                    [ 'Tag Name', 'Class', 'Id' ]
-                                ].concat(data.elementNames),
-                                data.data
-                            ]
-                        ];
-                    });
+                    var viewData = [ ['Elements', 'ViewModel'] ];
+                    for (var i = 0; i < rowData.length; i++) {
+                        var rowDataItem = rowData[i];
+                            elementsData = [ [ 'Tag Name', 'Class', 'Id' ] ];
 
-                    render.engine.insert(args.panel, viewData[0]);
+                        for (var x = 0; x < rowDataItem.elementNames.length; x++) {
+                            elementsData.push(rowDataItem.elementNames[x]);
+                        }
+
+                        viewData.push([ elementsData, rowDataItem.data ])
+                    }
+
+                    render.engine.insert(args.panel, viewData);
                 }
             });
 
