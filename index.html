@@ -24,8 +24,8 @@
             'use strict';
 
             var vm = {
-                firstName: ko.observable(),
-                lastName: ko.observable()
+                firstName: ko.observable('Aaron'),
+                lastName: ko.observable('Powell')
             };
             vm.fullName = ko.computed(function () {
                 if (!this.firstName()) {
@@ -87,27 +87,21 @@
                     var rowData = models.map(function (record) {
                         var model = record.ko;
                         var props = Object.getOwnPropertyNames(model);
-                        var data = props.map(function (prop) {
-                            var res = {
-                                name: prop,
-                                data: undefined
-                            };
-                            
+                        var data = {};
+                        props.forEach(function (prop) {
                             if (ko.isObservable(model[prop])) {
-                                res.data = ko.utils.unwrapObservable(model[prop]);
+                                data[prop] = ko.utils.unwrapObservable(model[prop]);
                             } else {
-                                res.data = model[prop];
+                                data[prop] = model[prop];
                             }
-
-                            return res;
                         });
 
                         var elementNames = record.elements.map(function (element) {
-                            return {
-                                tag: element.tagName,
-                                classNames: element.className || 'N/A',
-                                id: element.id || 'N/A'
-                            };
+                            return [
+                                element.tagName.toLowerCase(),
+                                element.className || '-',
+                                element.id || '-'
+                            ];
                         });
 
                         return {
@@ -115,7 +109,20 @@
                             data: data
                         };
                     });
-console.log(rowData);
+
+                    var viewData = rowData.map(function (data) {
+                        return [
+                            ['Elements', 'ViewModel'],
+                            [
+                                [
+                                    [ 'Tag Name', 'Class', 'Id' ]
+                                ].concat(data.elementNames),
+                                data.data
+                            ]
+                        ];
+                    });
+
+                    render.engine.insert(args.panel, viewData[0]);
                 }
             });
 
