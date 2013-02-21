@@ -120,18 +120,21 @@
 
                     viewModelTables.each(function () {
                         var table = $(this);
-                        var vmCell = table.children('.glimpse-row-holder').find('> tr > td:last-child');
+                        var vmCells = table.children('.glimpse-row-holder').find('> tr > td:last-child');
 
-                        var rows = vmCell.find('tbody tr');
+                        vmCells.each(function (i) {
+                            var vmCell = $(this);
+                            var rows = vmCell.find('tbody tr');
 
-                        rows.each(function (i) {
-                            var that = $(this).find('td');
-                            var item = rowData[0].data[Object.getOwnPropertyNames(rowData[0].data)[i]];
-                            if (ko.isObservable(item)) {
-                                item.subscribe(function (val) {
-                                    that.html(val);
-                                });
-                            }
+                            rows.each(function (j) {
+                                var that = $(this).find('td');
+                                var item = rowData[i].data[Object.getOwnPropertyNames(rowData[i].data)[j]];
+                                if (ko.isObservable(item)) {
+                                    item.subscribe(function (val) {
+                                        that.html(val);
+                                    });
+                                }
+                            });
                         });
                     });
                 }
