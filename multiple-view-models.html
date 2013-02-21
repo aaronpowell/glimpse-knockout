@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Glimpse Knockout plugin</title>
+</head>
+<body>
+    <form class="one">
+        <legend>ViewModel 1</legend>
+        <div>
+            <label>First name: </label>
+            <input type="text" data-bind="value: firstName" />
+        </div>
+        <div>
+            <label>Last name: </label>
+            <input type="text" data-bind="value: lastName" />
+        </div>
+    </form>
+    <form class="two">
+        <legend>ViewModel 2</legend>
+        <div>
+            <label>First name: </label>
+            <input type="text" data-bind="value: firstName" />
+        </div>
+        <div>
+            <label>Last name: </label>
+            <input type="text" data-bind="value: lastName" />
+        </div>
+    </form>
+    <script src="glimpse.js"></script>
+    <script src="knockout-2.2.1.js"></script>
+
+    <script>
+        //Knockout setup
+        (function (ko) {
+            'use strict';
+
+            var ViewModel = function () {
+                this.firstName = ko.observable();
+                this.lastName = ko.observable();
+
+                this.fullName = ko.computed(function () {
+                    if (!this.firstName()) {
+                        return '';
+                    }
+
+                    return this.firstName() + ' ' + (this.lastName() || '');
+                    }, this);
+            };
+
+            ko.applyBindings(new ViewModel(), document.getElementsByTagName('form')[0]);
+            ko.applyBindings(new ViewModel(), document.getElementsByTagName('form')[1]);
+        })(window.ko);
+    </script>
+
+    <script src="glimpse-knockout.js"></script>
+</body>
+</html>
