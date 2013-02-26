@@ -87,6 +87,30 @@
             }
 
             render.engine.insert(args.panel, viewData);
+
+            //temp work arounds until there is a better way to interact with generated HTML
+            var viewModelTables = args.panel.children('table').last();
+
+            viewModelTables.each(function () {
+                var table = $(this);
+                var vmCells = table.children('.glimpse-row-holder').find('> tr > td:last-child');
+
+                vmCells.each(function (i) {
+                    var vmCell = $(this);
+                    var rows = vmCell.find('tbody tr');
+
+                    rows.each(function (j) {
+                        var that = $(this).find('td');
+                        var item = rowData[i].data[Object.getOwnPropertyNames(rowData[i].data)[j]];
+                        if (ko.isObservable(item)) {
+                            item.subscribe(function (val) {
+                                that.html(null);
+                                render.engine.insert(that, val);
+                            });
+                        }
+                    });
+                });
+            });
         });
 
         if (!models().length) {
@@ -117,7 +141,8 @@
                         var item = rowData[i].data[Object.getOwnPropertyNames(rowData[i].data)[j]];
                         if (ko.isObservable(item)) {
                             item.subscribe(function (val) {
-                                that.html(val);
+                                that.html(null);
+                                render.engine.insert(that, val);
                             });
                         }
                     });
@@ -146,4 +171,6 @@
         });
         originalApplyBindings.apply(this, arguments);
     };
+
+window.models = models;
 })(jQueryGlimpse, glimpse.pubsub, glimpse.tab, glimpse.render, window.ko);
