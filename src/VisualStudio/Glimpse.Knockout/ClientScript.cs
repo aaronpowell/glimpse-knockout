@@ -2,12 +2,12 @@
 
 namespace Glimpse.Knockout
 {
-    public sealed class ClientScript : IDynamicClientScript
+    public sealed class ClientScript : IStaticClientScript
     {
         public ScriptOrder Order { get { return ScriptOrder.IncludeAfterClientInterfaceScript; } }
-        public string GetResourceName()
+        public string GetUri(string version)
         {
-            return "Glimpse.Knockout.Scripts.glimpse-knockout.js";
+            return "/Scripts/glimpse-knockout.js";
         }
     }
 }

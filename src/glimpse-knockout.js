@@ -1,7 +1,7 @@
 ;(function($, pubsub, tab, render) {
     'use strict';
+    var models = [];
     pubsub.subscribe('action.panel.rendering.ko', function (args) {
-        var models = [];
         var excludeTags = ['script', 'link'];
         var body = document.body;
 
@@ -34,12 +34,9 @@
         for(var i = 0, il = body.children.length; i < il; i++) {
             elementWalker(body.children[i]);
         }
-        args.pluginData.models = models;
     });
 
     pubsub.subscribe('action.panel.showed.ko', function (args) {
-        var models = args.pluginData.models;
-
         if (!models.length) {
             render.engine.insert(args.panel, 'No ko ViewModel\'s were found');
         } else {
@@ -111,8 +108,7 @@
             name: 'KnockoutJS',
             version: '0.1.0',
             isPermanent: true,
-            data: 'Loading...',
-            models: []
+            data: 'Loading...'
         }
     };
 

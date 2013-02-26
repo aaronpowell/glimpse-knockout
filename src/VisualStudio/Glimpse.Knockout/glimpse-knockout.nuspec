@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>glimpse-knockout</id>
-        <version>0.1.1</version>
+        <version>0.1.4</version>
         <title>KnockoutJS inspector for Glimpse</title>
         <authors>Aaron Powell</authors>
         <owners>Aaron Powell</owners>
@@ -20,6 +20,7 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="bin\Release\Glimpse.Core.dll" target="lib\Glimpse.Knockout.dll" />
+        <file src="bin\Release\Glimpse.Knockout.dll" target="lib\net40\Glimpse.Knockout.dll" />
+        <file src="..\..\glimpse-knockout.js" target="content\Scripts\glimpse-knockout.js" />
     </files>
 </package>
