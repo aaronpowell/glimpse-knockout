@@ -1,6 +1,14 @@
-;(function($, pubsub, tab, render) {
+;(function($, pubsub, tab, render, ko) {
     'use strict';
-    var models = [];
+
+    if (!ko) {
+        pubsub.subscribe('action.panel.showed.ko', function (args) {
+            render.engine.insert(args.panel, 'KnockoutJS is not available on this screen. Plugin disabled.');
+        });
+        return;
+    }
+
+    var models = ko.observableArray();
     pubsub.subscribe('action.panel.rendering.ko', function (args) {
         var excludeTags = ['script', 'link'];
         var body = document.body;
@@ -14,7 +22,7 @@
             model = ko.contextFor(child);
             if (model) {
                 model = model.$root;
-                var item = models.filter(function (m) {
+                var item = models().filter(function (m) {
                     return m.ko === model;
                 })[0];
 
@@ -37,42 +45,58 @@
     });
 
     pubsub.subscribe('action.panel.showed.ko', function (args) {
-        if (!models.length) {
-            render.engine.insert(args.panel, 'No ko ViewModel\'s were found');
-        } else {
-            var rowData = models.map(function (record) {
-                var model = record.ko;
-                var elementNames = record.elements.map(function (element) {
-                    return [
-                        element.tagName.toLowerCase(),
-                        element.className || '-',
-                        element.id || '-'
-                    ];
-                });
-
-                return {
-                    elementNames: elementNames,
-                    data: model
-                };
+        var modelToRow = function (record) {
+            var model = record.ko;
+            var elementNames = record.elements.map(function (element) {
+                return [
+                    element.tagName.toLowerCase(),
+                    element.className || '-',
+                    element.id || '-'
+                ];
             });
+
+            return {
+                elementNames: elementNames,
+                data: model
+            };
+        };
+
+        var rowToView = function (rowDataItem) {
+            var elementsData = [ [ 'Tag Name', 'Class', 'Id' ] ];
+
+            for (var x = 0; x < rowDataItem.elementNames.length; x++) {
+                elementsData.push(rowDataItem.elementNames[x]);
+            }
+
+            var keys = Object.getOwnPropertyNames(rowDataItem.data);
+            var data = {};
+            keys.forEach(function (key) {
+                var item = rowDataItem.data[key];
+                data[key] = ko.isObservable(item) ? ko.utils.unwrapObservable(item) : item;
+            });
+
+            return [ elementsData, data ];
+        };
+
+        models.subscribe(function (value) {
+            var rowData = [modelToRow(value[value.length - 1])];
 
             var viewData = [ ['Elements', 'ViewModel'] ];
             for (var i = 0; i < rowData.length; i++) {
-                var rowDataItem = rowData[i],
-                    elementsData = [ [ 'Tag Name', 'Class', 'Id' ] ];
+                viewData.push(rowToView(rowData[i]))
+            }
 
-                for (var x = 0; x < rowDataItem.elementNames.length; x++) {
-                    elementsData.push(rowDataItem.elementNames[x]);
-                }
+            render.engine.insert(args.panel, viewData);
+        });
 
-                var keys = Object.getOwnPropertyNames(rowDataItem.data);
-                var data = {};
-                keys.forEach(function (key) {
-                    var item = rowDataItem.data[key];
-                    data[key] = ko.isObservable(item) ? ko.utils.unwrapObservable(item) : item;
-                });
+        if (!models().length) {
+            render.engine.insert(args.panel, 'No ko ViewModel\'s were found');
+        } else {
+            var rowData = models().map(modelToRow);
 
-                viewData.push([ elementsData, data ])
+            var viewData = [ ['Elements', 'ViewModel'] ];
+            for (var i = 0; i < rowData.length; i++) {
+                viewData.push(rowToView(rowData[i]))
             }
 
             render.engine.insert(args.panel, viewData);
@@ -113,4 +137,13 @@
     };
 
     tab.register(config);
-})(jQueryGlimpse, glimpse.pubsub, glimpse.tab, glimpse.render);
+
+    var originalApplyBindings = ko.applyBindings;
+    ko.applyBindings = function () {
+        models.push({
+            ko: arguments[0],
+            elements: [arguments[1] || document.body]
+        });
+        originalApplyBindings.apply(this, arguments);
+    };
+})(jQueryGlimpse, glimpse.pubsub, glimpse.tab, glimpse.render, window.ko);

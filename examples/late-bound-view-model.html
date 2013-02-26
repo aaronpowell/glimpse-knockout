@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Glimpse Knockout plugin</title>
+</head>
+<body>
+    <ul data-bind="foreach: items">
+        <li data-bind="text: $data"></li>
+    </ul>
+    <script src="glimpse.js"></script>
+    <script src="knockout-2.2.1.js"></script>
+
+    <script>
+        //Knockout setup
+        (function (ko) {
+            'use strict';
+
+            var vm = {
+                items: ko.observableArray([1,2,3,4,5,6])
+            };
+
+            setTimeout(function () {
+                ko.applyBindings(vm, document.getElementsByTagName('ul')[0]);
+            }, 10);
+        })(window.ko);
+    </script>
+
+    <script src="../src/glimpse-knockout.js"></script>
+</body>
+</html>
