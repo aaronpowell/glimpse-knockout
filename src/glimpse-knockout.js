@@ -104,8 +104,9 @@
                         var item = rowData[i].data[Object.getOwnPropertyNames(rowData[i].data)[j]];
                         if (ko.isObservable(item)) {
                             item.subscribe(function (val) {
-                                that.html(null);
-                                render.engine.insert(that, val);
+                                var html = render.engine._providers.master.build(val, 2);
+                                that.html(html);
+                                pubsub.publish('trigger.panel.render.style', { scope: that.children() });
                             });
                         }
                     });
@@ -141,8 +142,9 @@
                         var item = rowData[i].data[Object.getOwnPropertyNames(rowData[i].data)[j]];
                         if (ko.isObservable(item)) {
                             item.subscribe(function (val) {
-                                that.html(null);
-                                render.engine.insert(that, val);
+                                var html = render.engine._providers.master.build(val, 2);
+                                that.html(html);
+                                pubsub.publish('trigger.panel.render.style', { scope: that.children() });
                             });
                         }
                     });
