@@ -83,7 +83,7 @@
 
             var viewData = [ ['Elements', 'ViewModel'] ];
             for (var i = 0; i < rowData.length; i++) {
-                viewData.push(rowToView(rowData[i]))
+                viewData.push(rowToView(rowData[i]));
             }
 
             render.engine.insert(args.panel, viewData);
@@ -167,10 +167,12 @@
 
     var originalApplyBindings = ko.applyBindings;
     ko.applyBindings = function () {
-        models.push({
-            ko: arguments[0],
-            elements: [arguments[1] || document.body]
-        });
+        if (!('$parent' in arguments[0])) {
+            models.push({
+                ko: arguments[0],
+                elements: [arguments[1] || document.body]
+            });
+        }
         originalApplyBindings.apply(this, arguments);
     };
 

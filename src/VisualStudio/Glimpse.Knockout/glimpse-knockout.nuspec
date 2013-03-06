@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>glimpse-knockout</id>
-        <version>0.1.4</version>
+        <version>0.1.5</version>
         <title>KnockoutJS inspector for Glimpse</title>
         <authors>Aaron Powell</authors>
         <owners>Aaron Powell</owners>
@@ -15,7 +15,7 @@
         <copyright>Aaron Powell</copyright>
         <tags>knockoutjs glimpse web</tags>
         <dependencies>
-            <dependency id="Glimpse" version="1.0.0" />
+            <dependency id="Glimpse" version="1.0.1" />
             <dependency id="KnockoutJS" version="2.2.1" />
         </dependencies>
     </metadata>
